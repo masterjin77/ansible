@@ -1,0 +1,39 @@
+---
+- name: Setup fot the Ansible's Environment
+  hosts: all
+  connection: local
+  serial: 1
+  gather_facts: no
+
+  tasks:
+    - name: ssh-keyscan for known_hosts
+      command: /usr/bin/ssh-keyscan -t ecdsa {{ ansible_host }}
+      register: keyscan
+
+    - name: input key
+      lineinfile:
+        path: ~/.ssh/known_hosts
+        line: "{{ item }}"
+        create: yes
+      with_items:
+        - "{{ keyscan.stdout_lines }}"
+
+- name: Create authorized_keys between server and nodes
+  hosts: all
+  connection: local 
+  gather_facts: no
+  vars:
+    ansible_password: password123
+
+  tasks: 
+    - name: ssh-keygen for authorized_keys file
+      command: "ssh-keygen -b 2048 -t rsa -f ~/.ssh/id_rsa -q -N ''"
+      ignore_errors: yes
+      run_once: true
+
+    - name: input key for each node
+      connection: ssh
+      authorized_key:
+        user: root 
+        state: present  
+        key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"

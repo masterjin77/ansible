@@ -1,0 +1,11 @@
+---
+- name: Copy file
+  hosts: all  
+  gather_facts: no
+
+  tasks:
+    - name: Copy - hostdown.sh
+      copy:
+        src: ./files/hostdown.sh
+        dest: /usr/local/bin/hostdown.sh
+        mode: 0755
