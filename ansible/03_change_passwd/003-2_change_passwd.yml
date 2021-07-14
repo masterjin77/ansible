@@ -9,5 +9,4 @@
         name: "{{ USER_NAME }}"
         update_password: always 
         password: "{{ PASSWORD | password_hash('sha512') }}"   
-
 ## ansible-playbook -i inventory 003-2.change_password.yml --extra-vars "USER_NAME=masterjin77 PASSWORD=wk0026"
